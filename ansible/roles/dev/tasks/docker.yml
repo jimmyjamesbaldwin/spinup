@@ -1,0 +1,57 @@
+---
+
+- name: Check if docker is installed
+  shell: dpkg-query -W 'docker'
+  ignore_errors: True
+  register: docker_installed
+
+- block:
+  - name: Install docker-py
+    pip:
+      name: ['docker-py']
+      state: latest
+
+  - name: Add docker apt key (alternative for older systems without SNI).
+    shell: 'curl -sSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -'
+    args:
+      warn: false
+
+  - name: Add docker repository
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+      state: present
+
+  - name: Install docker tools
+    apt:
+      name: '{{ item }}'
+      state: present
+      update_cache: yes
+    with_items:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+
+  - name: Add user to docker group
+    user: 
+      name: '{{ local_user }}'
+      groups: docker
+      append: yes
+
+  # prefer /etc/sysconfig/docker over /etc/docker/daemon.json
+  - name: Create /etc/sysconfig/docker
+    file: 
+      path: /etc/sysconfig/docker
+      state: directory
+      mode: 0755
+
+  - name: Template out docker config
+    template:
+      src: docker.j2
+      dest: /etc/sysconfig/docker
+    changed_when: True # always
+    notify: Restart Docker
+
+  rescue:
+    - fail: 
+        msg: 'Looks like something went wrong installing docker! :(' 
+  #when: docker_installed|failed

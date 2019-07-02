@@ -1,0 +1,12 @@
+---
+
+# maybe install a theme at some point: https://www.ubuntupit.com/best-ubuntu-themes-will-blow-mind/
+- apt:
+    name: xfce4
+    state: present
+
+- name: Copy screensaver config
+  copy:
+    src: xscreensaver
+    dest: '~/.xscreensaver'
+  become_user: '{{ local_user }}'

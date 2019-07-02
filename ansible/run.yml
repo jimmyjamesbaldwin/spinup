@@ -1,0 +1,27 @@
+---
+
+- name: Configure dev box
+  hosts: all
+  become: true
+  vars_files:
+    - 'environment_vars/vars'
+    - 'environment_vars/vault'
+    - 'roles/common/vars/vars'
+    - 'roles/dev/vars/vars'
+  vars:
+    proxy_env:
+      http_proxy: http://{{ proxy_username }}:{{ proxy_password }}@{{ proxy_server }}:{{ proxy_port }}
+      HTTP_PROXY: http://{{ proxy_username }}:{{ proxy_password }}@{{ proxy_server }}:{{ proxy_port }}
+      https_proxy: http://{{ proxy_username }}:{{ proxy_password }}@{{ proxy_server }}:{{ proxy_port }}
+      HTTPS_PROXY: http://{{ proxy_username }}:{{ proxy_password }}@{{ proxy_server }}:{{ proxy_port }}
+  roles:
+    - { name: common }
+    - { name: dev }
+    - { name: misc }
+  post_tasks:
+    - apt: # do an update cache at the end setting proxy, etc.
+        upgrade: yes
+        update_cache: yes
+    - debug:
+        msg: 'Done - please reboot at your leisure...'
+  environment: '{{ proxy_env }}'

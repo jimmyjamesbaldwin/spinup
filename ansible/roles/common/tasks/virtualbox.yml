@@ -1,0 +1,22 @@
+---
+
+- name: Check if VirtualBox Guest Additions is installed
+  shell: dpkg-query -W 'virtualbox-guest-additions-iso'
+  ignore_errors: True
+  register: vboxga_installed
+
+- block:
+  - name: VBoxGA
+    apt:
+      name: '{{ item }}'
+      state: present
+    with_items:
+      - build-essential
+      - dkms
+      - virtualbox-guest-additions-iso
+
+  - name: Add user to vboxsf group so we can access VirtualBox shared folders
+    user: 
+      name: '{{ vm_username }}'
+      group: vboxsf
+when: vboxga_installed|failed

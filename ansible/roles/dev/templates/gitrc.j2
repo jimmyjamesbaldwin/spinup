@@ -1,0 +1,7 @@
+[user]
+        name = {{ git_name }}
+        email = {{ git_email }}
+[credential]
+        helper = cache --timeout={{ git_cred_timeout }}
+[github]
+	token = {{ git_pat_token }}

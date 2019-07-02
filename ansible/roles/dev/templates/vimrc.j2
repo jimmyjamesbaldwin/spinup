@@ -1,0 +1,23 @@
+set nocompatible
+set number
+set cursorline
+set cursorcolumn
+set shiftwidth=2
+
+" Ansible vault
+au BufNewFile,BufRead *.yml,*.yaml,*vault*,*/environment_vars/* call s:detect_ansible_vault()
+
+command! VaultRead :%!ansible-vault view -
+command! VaultWrite w !ansible-vault encrypt --output % - >/dev/null
+
+function! s:detect_ansible_vault()
+ let n = 1
+ while n < 10 && n < line('$')
+   if getline(n) =~ 'ANSIBLE_VAULT'
+     setlocal ft=yaml
+     VaultRead
+     autocmd BufWriteCmd <buffer> VaultWrite
+   endif
+   let n = n + 1
+ endwhile
+endfunction

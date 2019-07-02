@@ -1,0 +1,7 @@
+git_pat_token: blah
+proxy_password: blah
+
+# these are work-specific, so I've redacted them...
+bash_secrets: |
+  export BASH_SECRET_1='blah'
+  export BASH_SECRET_2='blah'

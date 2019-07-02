@@ -1,0 +1,24 @@
+---
+
+- name: Check if VS Code is installed
+  shell: dpkg-query -W 'code'
+  ignore_errors: True
+  register: vscode_installed
+
+- block:
+    - name: Add Microsoft gpg key to apt
+      shell: 'curl -sSL https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -'
+      args:
+        warn: false
+
+    - name: Add VS Code repository
+      apt_repository:
+        repo: deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main
+        state: present
+
+    - name: Install VS Code
+      apt: 
+        name: code
+        update_cache: yes
+  when: vscode_installed|failed
+  

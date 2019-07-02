@@ -1,0 +1,6 @@
+local_user: ubuntu
+git_name: James Baldwin
+git_email: email@domain.com
+proxy_username: blah
+proxy_server: emea.proxy.com
+proxy_port: 80

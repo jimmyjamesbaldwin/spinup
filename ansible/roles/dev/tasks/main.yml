@@ -1,0 +1,45 @@
+---
+
+- name: Install and setup ca certs
+  include: cacerts.yml
+
+- name: Install and setup docker
+  include: docker.yml
+
+- name: Install and setup VS Code
+  include: vscode.yml
+
+- name: Install dev tools
+  apt:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - curl
+    - git
+    - nmap
+    - vim
+    - pwgen
+    - openssl
+    - python-openssl
+    - python-pip
+
+- name: Install pip dependencies
+  pip:
+    name: '{{ item }}'
+  with_items:
+    - shyaml
+    - awscli
+    - boto3
+    - httpie
+
+- name: Template out git config
+  template:
+    src: gitrc.j2
+    dest: ~/.gitconfig
+  become_user: '{{ local_user }}'
+
+- name: Template out vim config
+  template:
+    src: vimrc.j2
+    dest: ~/.vimrc
+  become_user: '{{ local_user }}'

@@ -1,0 +1,5 @@
+git_cred_timeout: 86400
+docker_add_registry: ""
+docker_block_registry: ""
+docker_insecure_registry: ""
+
